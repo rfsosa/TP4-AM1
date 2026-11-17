@@ -3,58 +3,86 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Panóptico — Conectando lo físico y lo virtual</title>
+<title>SONRÍA</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=Archivo+Narrow:wght@400;700&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Anton&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
 <style>
-:root{--bg:#121212;--fg:#f1f1f3;--mut:#8d8d96;--g:#00ff78}
 *{box-sizing:border-box}
-html,body{margin:0;height:100%;background:var(--bg);color:var(--fg);font-family:'Archivo Narrow','Arial Narrow',sans-serif;overflow:hidden}
+html,body{margin:0;height:100%;background:#000;color:#fff;font-family:'Anton','Impact','Arial Narrow',sans-serif;overflow:hidden}
 canvas{display:block;width:100vw;height:100vh;object-fit:contain;background:#000}
-#landing{position:fixed;inset:0;display:grid;grid-template-columns:1.5fr 1fr;gap:14px;padding:14px;background:var(--bg);transition:opacity .8s;z-index:5}
+#landing{position:fixed;inset:0;background:#d9181e;display:flex;align-items:center;justify-content:center;gap:clamp(16px,4vw,64px);padding:3vh 3vw;transition:opacity .8s;z-index:5;overflow:auto}
 #landing.off{opacity:0;pointer-events:none}
-.card{border-radius:10px;padding:clamp(20px,4vw,48px);display:flex;flex-direction:column;justify-content:space-between;overflow:auto}
-.main{background:linear-gradient(135deg,#c3b4dc 0%,#c9c6f2 45%,#c397b4 100%);color:#111}
-.side{background:#e9e9ec;color:#111;position:relative}
-.mono{font-family:'JetBrains Mono',monospace;font-size:12px;letter-spacing:.06em;text-transform:uppercase}
-h1{font-weight:700;font-size:clamp(56px,11vw,150px);line-height:.9;letter-spacing:-.04em;margin:.2em 0}
-.q{font-style:italic;font-weight:700;font-size:clamp(16px,2vw,24px);text-transform:uppercase}
-p{font-size:clamp(15px,1.5vw,19px);line-height:1.25;margin:.5em 0;max-width:46ch}
-ol{padding-left:1.2em;margin:.6em 0;font-size:clamp(15px,1.4vw,18px);line-height:1.35}
-button{margin-top:18px;background:#111;color:#fff;border:0;border-radius:6px;padding:16px 22px;font:700 13px 'JetBrains Mono',monospace;letter-spacing:.1em;cursor:pointer;width:100%}
-button:hover{background:#00c85f;color:#000}
-#msg{margin-top:10px;min-height:1.2em;color:#a00}
-.x{position:absolute;inset:0;margin:auto;width:70%;height:70%;opacity:.8}
-@media(max-width:800px){#landing{grid-template-columns:1fr}.side{display:none}}
+.sign{width:min(38vh,40vw);aspect-ratio:5/8;border:4px solid #fff;border-radius:12px;padding:2.4vh 2vh;display:flex;flex-direction:column;align-items:center;justify-content:space-between;text-align:center;flex:none}
+.sign svg{width:78%}
+.sign h1{font-weight:400;font-size:clamp(40px,8.5vh,96px);line-height:.95;margin:0}
+.sign h2{font-weight:400;font-size:clamp(22px,4.6vh,52px);line-height:1;margin:0}
+.form{background:#fff;color:#111;border-radius:8px;padding:clamp(16px,2.2vw,30px);width:min(540px,92vw);font:12.5px/1.4 'JetBrains Mono',monospace;max-height:94vh;overflow:auto}
+.form h3{font:400 clamp(20px,2.6vw,30px)/1 'Anton',sans-serif;margin:0 0 8px;text-transform:uppercase}
+.bar{height:10px;background:#ddd;margin:4px 0}.bar i{display:block;height:100%;width:0;background:#d9181e}
+.chk{display:block;margin:4px 0}.fine{height:78px;overflow:auto;border:1px solid #bbb;padding:6px;margin:10px 0;font-size:11px;color:#555}
+.btns{display:flex;gap:10px;position:relative}
+button{flex:1;font:700 13px 'JetBrains Mono',monospace;letter-spacing:.08em;padding:14px;border-radius:6px;cursor:pointer;border:2px solid #d9181e;transition:transform .15s}
+.ok{background:#d9181e;color:#fff}.no{background:#fff;color:#d9181e}
+#nomsg,#msg{min-height:1.2em;margin-top:6px;color:#d9181e;font-weight:700}
+@media(max-width:860px){#landing{flex-direction:column;justify-content:flex-start}.sign{width:min(52vw,230px)}}
 </style>
 </head>
 <body>
 <div id="landing">
-  <div class="card main">
-    <div class="mono">Trabajo práctico N°4 · Artes Multimediales I · Cátedra Pirotta</div>
-    <div>
-      <h1>Panóptico</h1>
-      <div class="q">«Donde hay poder, hay resistencia»</div>
-      <p>Una cámara te encuadra dentro de una retícula de vigilancia. Pero tu cuerpo puede romper la norma geométrica del sistema.</p>
-      <ol><li>Permití el acceso a la cámara y a los altavoces.</li><li>Pará frente a la pantalla, con los brazos abajo.</li><li>Abrí las manos y movelas hacia la imagen.</li></ol>
-    </div>
-    <div>
-      <button id="go">ENTRAR AL ESPACIO</button>
-      <div id="msg" class="mono"></div>
-      <div class="mono" style="margin-top:14px;color:#444">Rocío Sosa — Azul Cejas · El video se procesa en tu dispositivo, no se envía ni se guarda.</div>
-    </div>
+  <div class="sign">
+    <svg viewBox="0 0 100 100" fill="none">
+      <circle cx="50" cy="50" r="44" stroke="#fff" stroke-width="6"/>
+      <g><circle cx="34" cy="38" r="11" fill="#fff"/><circle class="pupil" cx="34" cy="38" r="5" fill="#d9181e"/></g>
+      <g><circle cx="66" cy="38" r="11" fill="#fff"/><circle class="pupil" cx="66" cy="38" r="5" fill="#d9181e"/></g>
+      <path d="M26 60Q50 82 74 60" stroke="#fff" stroke-width="6" stroke-linecap="round"/>
+    </svg>
+    <h1>SONRÍA</h1><h2>LO ESTAMOS<br>FILMANDO</h2>
   </div>
-  <div class="card side">
-    <svg class="x" viewBox="0 0 100 100" fill="none" stroke="#111" stroke-width=".5" stroke-dasharray="3 2"><path d="M5 5L95 95M95 5L5 95M50 0V100M0 50H100"/></svg>
-    <div class="mono">Eje conceptual</div>
-    <div class="mono">Foucault · Blob tracking · Warp</div>
+  <div class="form">
+    <h3>Acta de consentimiento n.º <span id="sid"></span></h3>
+    <div id="clock"></div>
+    <div>Sujetos observados hoy: <b id="cnt"></b></div>
+    <div>Pantalla: <span id="res"></span> · Idioma: <span id="lang"></span></div>
+    <div style="margin-top:8px">Nivel de sospecha: <b id="susn">0</b>%</div>
+    <div class="bar"><i id="susb"></i></div><div id="susm">Comportamiento normal. Por ahora.</div>
+    <div style="margin-top:10px">
+      <label class="chk"><input type="checkbox" checked disabled> Acepto ser filmado, analizado y archivado.</label>
+      <label class="chk"><input type="checkbox" checked disabled> Acepto que mi sonrisa sea evaluada.</label>
+      <label class="chk"><input type="checkbox" checked disabled> Acepto no leer esto. <i>(No se puede destildar.)</i></label>
+    </div>
+    <div class="fine">1. Al ingresar, el sujeto cede su silueta, su postura y su expresión de duda.<br>2. La institución no se responsabiliza por la sonrisa propia ni ajena.<br>3. Todo gesto, incluso el involuntario, constituye una respuesta.<br>4. Si el sujeto no sonríe, se interpretará como una sonrisa.<br>5. La cámara solo mira: el video se procesa en tu dispositivo y no se guarda ni se envía. Es lo único de esta acta que no es una broma.<br>6. Gracias por su colaboración.</div>
+    <div class="btns"><button id="go" class="ok">ACEPTO</button><button id="no" class="no">NO ACEPTO</button></div>
+    <div id="nomsg"></div><div id="msg"></div>
+    <div style="font-size:11px;color:#777;margin-top:8px">TP N°4 · Artes Multimediales I · Cátedra Pirotta · Rocío Sosa — Azul Cejas</div>
   </div>
 </div>
 <canvas id="c"></canvas>
 <video id="v" playsinline muted style="display:none"></video>
 
+<script>
+(() => {
+  const $ = id => document.getElementById(id);
+  $('sid').textContent = 'SUJETO_' + (Math.random() * 9000 + 1000 | 0);
+  $('res').textContent = screen.width + '×' + screen.height; $('lang').textContent = navigator.language;
+  let moves = 0, travel = 0, lx = innerWidth / 2, ly = innerHeight / 2, px = lx, py = ly; const t0 = Date.now();
+  const pupils = [...document.querySelectorAll('.pupil')];
+  function look() { pupils.forEach(p => { const r = p.previousElementSibling.getBoundingClientRect(), cx = r.x + r.width / 2, cy = r.y + r.height / 2, a = Math.atan2(py - cy, px - cx), d = Math.min(1, Math.hypot(py - cy, px - cx) / 150) * 5.5; p.setAttribute('transform', `translate(${Math.cos(a) * d},${Math.sin(a) * d})`); }); }
+  addEventListener('pointermove', e => { moves++; travel += Math.hypot(e.clientX - lx, e.clientY - ly) / 400; lx = px = e.clientX; ly = py = e.clientY; look(); });
+  look();
+  setInterval(() => {
+    const lvl = Math.min(100, (Date.now() - t0) / 1000 * 1.5 + moves * .08 + travel * 1.5) | 0;
+    $('susn').textContent = lvl; $('susb').style.width = lvl + '%';
+    $('susm').textContent = lvl < 15 ? 'Comportamiento normal. Por ahora.' : lvl < 40 ? 'Estás dudando. Eso es sospechoso.' : lvl < 70 ? `Moviste el mouse ${moves} veces. Lo anotamos.` : 'Nivel crítico. Sonreír lo soluciona.';
+    $('clock').textContent = new Date().toLocaleString('es-AR');
+    $('cnt').textContent = (3000 + (Date.now() / 2700 % 86400 | 0)).toLocaleString('es-AR');
+  }, 250);
+  const no = $('no');
+  no.addEventListener('pointerenter', () => { no.style.transform = `translate(${(Math.random() - .5) * 220}px,${(Math.random() - .5) * 90}px)`; });
+  no.addEventListener('click', () => { $('nomsg').textContent = 'Opción no disponible. Gracias por su colaboración.'; });
+})();
+</script>
 <script type="module">
-import {HandLandmarker, PoseLandmarker, FilesetResolver} from "https://cdn.jsdelivr.net/npm/@mediapipe/tasks-vision@0.10.14/vision_bundle.mjs";
+import {HandLandmarker, PoseLandmarker, FaceLandmarker, FilesetResolver} from "https://cdn.jsdelivr.net/npm/@mediapipe/tasks-vision@0.10.14/vision_bundle.mjs";
 
 const W = 854, H = 480, M = "https://storage.googleapis.com/mediapipe-models/";
 const cv = document.getElementById('c'), ctx = cv.getContext('2d'); cv.width = W; cv.height = H;
@@ -62,7 +90,7 @@ const src = document.createElement('canvas'); src.width = W; src.height = H;
 const sx = src.getContext('2d', {willReadFrequently: true});
 const out = ctx.createImageData(W, H);
 const v = document.getElementById('v'), msg = document.getElementById('msg');
-let hl, pl, hands = [], last = -1, frame = 0, scan = 0, lv = 0, pose = null;
+let hl, pl, fl, faces = [], hands = [], last = -1, frame = 0, scan = 0, lv = 0, newPoses = null, tracks = [], nextId = 1;
 const box = {x0: 330, y0: 110, x1: 520, y1: 400};
 const S = W / 640; let vw = W, vh = H, ox = 0, oy = 0, cw = W, ch = H;   // S: escala de efectos; resto: recorte 16:9 de la cámara
 const mx = l => W - ((l.x * vw - ox) / cw) * W, my = l => ((l.y * vh - oy) / ch) * H;
@@ -117,8 +145,9 @@ document.getElementById('go').onclick = async () => {
         try { return await C.createFromOptions(fs, {baseOptions: {modelAssetPath: M + path, delegate}, runningMode: "VIDEO", ...extra}); } catch (e) {}
       } throw new Error('No se pudo cargar el modelo');
     };
-    hl = await mk(HandLandmarker, "hand_landmarker/hand_landmarker/float16/1/hand_landmarker.task", {numHands: 2});
-    pl = await mk(PoseLandmarker, "pose_landmarker/pose_landmarker_lite/float16/1/pose_landmarker_lite.task", {numPoses: 1});
+    hl = await mk(HandLandmarker, "hand_landmarker/hand_landmarker/float16/1/hand_landmarker.task", {numHands: 6});
+    pl = await mk(PoseLandmarker, "pose_landmarker/pose_landmarker_lite/float16/1/pose_landmarker_lite.task", {numPoses: 4});
+    fl = await mk(FaceLandmarker, "face_landmarker/face_landmarker/float16/1/face_landmarker.task", {numFaces: 4, outputFaceBlendshapes: true});
     msg.textContent = 'Conectando dispositivo de video…';
     v.srcObject = await navigator.mediaDevices.getUserMedia({video: {width: {ideal: 1280}, height: {ideal: 720}, facingMode: "user"}});
     await v.play();
@@ -142,18 +171,39 @@ function gtxt(s, x, y) {
 }
 const STATUS = ['ANOMALOUS DISRUPTION DETECTED', 'ERR 0x00F1: GEOMETRY VIOLATION', 'SEGFAULT // BIO_TARGET LOST', 'SYSTEM FAILURE'];
 
+/* ---------- TRACKING DE VARIOS CUERPOS ---------- */
+// MediaPipe no da IDs: emparejamos cada cuerpo con la caja anterior más cercana para conservar su número.
+function updateTracks(poses) {
+  const ids = [0, 11, 12, 23, 24];
+  const found = poses.map(pz => {
+    const xs = ids.map(i => mx(pz[i])), ys = ids.map(i => my(pz[i]));
+    const x0 = Math.min(...xs), x1 = Math.max(...xs), pad = (x1 - x0) * .25;
+    return {x0: x0 - pad, x1: x1 + pad, y0: Math.min(...ys) - 40, y1: Math.min(Math.max(...ys) + 30, H - 5)};
+  });
+  const used = new Set();
+  for (const tr of tracks) {
+    let best = -1, bd = 170;
+    found.forEach((f, i) => { if (used.has(i)) return; const d = Math.hypot((f.x0 + f.x1 - tr.x0 - tr.x1) / 2, (f.y0 + f.y1 - tr.y0 - tr.y1) / 2); if (d < bd) { bd = d; best = i; } });
+    if (best >= 0) { used.add(best); Object.assign(tr, found[best]); tr.miss = 0; } else tr.miss++;
+  }
+  found.forEach((f, i) => { if (!used.has(i)) tracks.push({id: nextId++, ...f, dx0: f.x0, dx1: f.x1, dy0: f.y0, dy1: f.y1, miss: 0}); });
+  tracks = tracks.filter(t => t.miss < 6);
+}
+
 /* ---------- LOOP ---------- */
 function loop(t) {
   frame++;
   if (v.currentTime !== last) {
     last = v.currentTime;
     hands = hl.detectForVideo(v, t).landmarks || [];
-    if (frame % 3 === 0) { const p = pl.detectForVideo(v, t + 1).landmarks; pose = p && p[0] ? p[0] : null; }
+    if (frame % 2 === 0) { const f = fl.detectForVideo(v, t + 2); faces = (f.faceLandmarks || []).map((lm, i) => ({lm, bs: Object.fromEntries(((f.faceBlendshapes || [])[i]?.categories || []).map(c => [c.categoryName, c.score]))})); }
+    if (frame % 3 === 0) newPoses = pl.detectForVideo(v, t + 1).landmarks || [];
   }
   // recorte "cover" a 16:9 (si la cámara es 4:3 se pierde un poco arriba/abajo, sin deformar)
   vw = v.videoWidth || W; vh = v.videoHeight || H; cw = vw; ch = vh;
   if (vw / vh > W / H) cw = vh * W / H; else ch = vw * H / W;
   ox = (vw - cw) / 2; oy = (vh - ch) / 2;
+  if (newPoses) { updateTracks(newPoses); newPoses = null; }
   sx.save(); sx.translate(W, 0); sx.scale(-1, 1); sx.drawImage(v, ox, oy, cw, ch, 0, 0, W, H); sx.restore();
   const s = sx.getImageData(0, 0, W, H).data, o = out.data;
 
@@ -164,8 +214,13 @@ function loop(t) {
     const k = 16 * (.6 + op * .9);
     [9, 4, 8, 12, 16, 20].forEach((i, n) => pts.push({x: mx(h[i]), y: my(h[i]), r: (n === 0 ? 130 : 70) * S, k: k * S}));
   }
+  let mouth = 0;   // boca abierta o dientes (sonrisa) → también deforma la imagen
+  for (const f of faces) {
+    const sm = ((f.bs.mouthSmileLeft || 0) + (f.bs.mouthSmileRight || 0)) / 2, m = Math.max((f.bs.jawOpen || 0) * 1.6, sm * 1.4);
+    if (m > .35) { const a = f.lm[13], b = f.lm[14], c = {x: (a.x + b.x) / 2, y: (a.y + b.y) / 2}; mouth = Math.max(mouth, Math.min(1, m)); pts.push({x: mx(c), y: my(c), r: 110 * S, k: 16 * S * (.6 + m)}); }
+  }
   if (hands.length) { hx = Math.min(1, Math.max(0, hands.reduce((a, h) => a + mx(h[9]), 0) / hands.length / W)); hy = Math.min(1, Math.max(0, hands.reduce((a, h) => a + my(h[9]), 0) / hands.length / H)); }
-  lv = lerp(lv, hands.length ? Math.min(1, .5 + open * .5) : 0, .08);
+  lv = lerp(lv, Math.max(hands.length ? Math.min(1, .5 + open * .5) : 0, mouth * .9), .08);
   if (lv < .01) lv = 0;
 
   // warp liquify + tinte CCTV
@@ -183,27 +238,29 @@ function loop(t) {
   }
   ctx.putImageData(out, 0, 0);
 
-  // bounding box: sigue el TORSO (hombros/caderas), nunca las manos
-  if (pose) {
-    const ids = [0, 11, 12, 23, 24], xs = ids.map(i => mx(pose[i])), ys = ids.map(i => my(pose[i]));
-    const x0 = Math.min(...xs), x1 = Math.max(...xs), y0 = Math.min(...ys) - 40, y1 = Math.max(...ys) + 30, pad = (x1 - x0) * .25;
-    box.x0 = lerp(box.x0, x0 - pad, .15); box.x1 = lerp(box.x1, x1 + pad, .15); box.y0 = lerp(box.y0, y0, .15); box.y1 = lerp(box.y1, Math.min(y1, H - 5), .15);
-  }
-  const jx = (Math.random() - .5) * lv * 10, jy = (Math.random() - .5) * lv * 10, bx = box.x0 + jx, by = box.y0 + jy, bw = box.x1 - box.x0, bh = box.y1 - box.y0;
+  // una bounding box por cuerpo (torso/cabeza, nunca las manos)
   ctx.lineWidth = 1.5; ctx.font = '13px Courier';
-  if (lv > .3) { ctx.strokeStyle = '#ff2255'; ctx.strokeRect(bx + 4, by, bw, bh); ctx.strokeStyle = '#22e6ff'; ctx.strokeRect(bx - 4, by, bw, bh); }
-  ctx.strokeStyle = '#00ff78'; ctx.strokeRect(bx, by, bw, bh);
-  const cx = bx + bw / 2, cy = by + bh / 2;
-  ctx.beginPath(); ctx.moveTo(cx - 15, cy); ctx.lineTo(cx + 15, cy); ctx.moveTo(cx, cy - 15); ctx.lineTo(cx, cy + 15); ctx.stroke();
-  gtxt(lv > .6 && Math.random() < .5 ? 'BIO_TARGET: LOST' : 'BIO_TARGET: LOCKED', bx, by - 22);
-  gtxt('DISCIPLINARY ARCHITECTURE // CCTV', bx, by - 8);
-  gtxt('STATUS: ' + (lv > .05 ? STATUS[lv > .6 ? (frame / 12 | 0) % 4 : 0] : 'PASSIVE SURVEILLANCE'), bx, by + bh + 20);
+  const list = tracks.length ? tracks : [{id: 0, x0: box.x0, x1: box.x1, y0: box.y0, y1: box.y1}];
+  for (const tr of list) {
+    if (tr.dx0 === undefined) { tr.dx0 = tr.x0; tr.dx1 = tr.x1; tr.dy0 = tr.y0; tr.dy1 = tr.y1; }
+    tr.dx0 = lerp(tr.dx0, tr.x0, .15); tr.dx1 = lerp(tr.dx1, tr.x1, .15); tr.dy0 = lerp(tr.dy0, tr.y0, .15); tr.dy1 = lerp(tr.dy1, tr.y1, .15);
+    const bx = tr.dx0 + (Math.random() - .5) * lv * 10, by = tr.dy0 + (Math.random() - .5) * lv * 10, bw = tr.dx1 - tr.dx0, bh = tr.dy1 - tr.dy0;
+    if (lv > .3) { ctx.strokeStyle = '#ff2255'; ctx.strokeRect(bx + 4, by, bw, bh); ctx.strokeStyle = '#22e6ff'; ctx.strokeRect(bx - 4, by, bw, bh); }
+    ctx.strokeStyle = '#00ff78'; ctx.strokeRect(bx, by, bw, bh);
+    const cx = bx + bw / 2, cy = by + bh / 2;
+    ctx.beginPath(); ctx.moveTo(cx - 15, cy); ctx.lineTo(cx + 15, cy); ctx.moveTo(cx, cy - 15); ctx.lineTo(cx, cy + 15); ctx.stroke();
+    const tag = tr.id ? 'SUBJECT_' + String(tr.id).padStart(2, '0') : 'SUBJECT';
+    gtxt(tag + ': ' + (lv > .6 && Math.random() < .5 ? 'LOST' : tr.id ? 'LOCKED' : 'SEARCHING'), bx, by - 8);
+    gtxt('STATUS: ' + (lv > .05 ? STATUS[lv > .6 ? (frame / 12 | 0) % 4 : 0] : 'PASSIVE SURVEILLANCE'), bx, by + bh + 20);
+  }
 
   // escaneo + scanlines + HUD
   ctx.fillStyle = 'rgba(0,255,120,.35)'; ctx.fillRect(0, scan, W, 1.5); scan = (scan + 2.5) % H;
   ctx.fillStyle = 'rgba(0,255,120,.06)'; for (let y = 0; y < H; y += 4) ctx.fillRect(0, y, W, 1);
   gtxt('● REC // PANOPTICON FEED 01', 20, 30);
-  gtxt('MANOS: ' + hands.length + ' | M = MUTE', 20, 48);
+  gtxt('SONRÍA: LO ESTAMOS FILMANDO', W - 250, 30);
+  gtxt('SUJETOS: ' + tracks.length + ' | MANOS: ' + hands.length + ' | M = MUTE', 20, 48);
+  gtxt('DISCIPLINARY ARCHITECTURE // CCTV', 20, 66);
   if (lv > .5 && Math.random() < .25) gtxt('0x' + (Math.random() * 1e8 | 0).toString(16).toUpperCase() + ' ERR', Math.random() * (W - 120), Math.random() * H);
 
   updateAudio(hx, hy);
