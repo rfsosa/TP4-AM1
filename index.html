@@ -25,6 +25,11 @@ button{flex:1;font:700 13px 'JetBrains Mono',monospace;letter-spacing:.08em;padd
 .ok{background:#d9181e;color:#fff}.no{background:#fff;color:#d9181e}
 #nomsg,#msg{min-height:1.2em;margin-top:6px;color:#d9181e;font-weight:700}
 @media(max-width:860px){#landing{flex-direction:column;justify-content:flex-start}.sign{width:min(52vw,230px)}}
+#end{position:fixed;inset:0;background:#000;display:none;align-items:center;justify-content:center;flex-direction:column;cursor:pointer;z-index:10}
+#end.on{display:flex;animation:fi 1.5s}
+#end svg{width:min(52vh,70vw)}
+#hint{opacity:0;animation:fi 1s 5s forwards;font:12px 'JetBrains Mono',monospace;color:#888;margin-top:18px;letter-spacing:.1em}
+@keyframes fi{from{opacity:0}to{opacity:1}}
 </style>
 </head>
 <body>
@@ -58,6 +63,14 @@ button{flex:1;font:700 13px 'JetBrains Mono',monospace;letter-spacing:.08em;padd
 </div>
 <canvas id="c"></canvas>
 <video id="v" playsinline muted style="display:none"></video>
+<div id="end"><svg viewBox="0 0 100 100" fill="none">
+  <filter id="melt" x="-20%" y="-20%" width="140%" height="140%"><feTurbulence type="turbulence" baseFrequency="0.01 0.02" numOctaves="2" seed="3"><animate attributeName="baseFrequency" dur="6s" values="0.01 0.02;0.022 0.035;0.01 0.02" repeatCount="indefinite"/></feTurbulence><feDisplacementMap in="SourceGraphic" scale="9"/></filter>
+  <g filter="url(#melt)">
+    <path d="M50 8C72 6 92 24 91 48C90 66 84 80 70 90C60 96 52 90 44 94C28 98 8 80 9 54C10 30 28 10 50 8Z" stroke="#fff" stroke-width="6"/>
+    <ellipse cx="32" cy="40" rx="11" ry="15" fill="#fff"/><circle cx="34" cy="49" r="5" fill="#d9181e"/>
+    <ellipse cx="68" cy="46" rx="9" ry="7" fill="#fff"/><path d="M68 53C68 66 66 72 67 82" stroke="#fff" stroke-width="5" stroke-linecap="round"/>
+    <path d="M22 66Q40 90 58 68T84 76" stroke="#fff" stroke-width="6" stroke-linecap="round"/><path d="M40 82V96" stroke="#fff" stroke-width="5" stroke-linecap="round"/>
+  </g></svg><div id="hint">CLIC PARA REINICIAR LA VIGILANCIA</div></div>
 
 <script>
 (() => {
@@ -90,7 +103,7 @@ const src = document.createElement('canvas'); src.width = W; src.height = H;
 const sx = src.getContext('2d', {willReadFrequently: true});
 const out = ctx.createImageData(W, H);
 const v = document.getElementById('v'), msg = document.getElementById('msg');
-let hl, pl, fl, faces = [], hands = [], last = -1, frame = 0, scan = 0, lv = 0, newPoses = null, tracks = [], nextId = 1;
+let collapsed = false, dis = 0, calm = 0, prevT = 0, hl, pl, fl, faces = [], hands = [], last = -1, frame = 0, scan = 0, lv = 0, newPoses = null, tracks = [], nextId = 1;
 const box = {x0: 330, y0: 110, x1: 520, y1: 400};
 const S = W / 640; let vw = W, vh = H, ox = 0, oy = 0, cw = W, ch = H;   // S: escala de efectos; resto: recorte 16:9 de la cámara
 const mx = l => W - ((l.x * vw - ox) / cw) * W, my = l => ((l.y * vh - oy) / ch) * H;
@@ -133,7 +146,7 @@ function updateAudio(hx, hy) {
     else { beep(200 + Math.random() * 3800, .04 + Math.random() * .08, .05 * lv, 'square'); nextBeep = t + .05 + Math.random() * .4 * (1 - lv); }
   }
 }
-addEventListener('keydown', e => { if (e.key.toLowerCase() === 'm' && A) { muted = !muted; A.master.gain.value = muted ? 0 : .8; } });
+addEventListener('keydown', e => { const k = e.key.toLowerCase(); if (k === 'escape') location.reload(); if (k === 'f') document.documentElement.requestFullscreen?.(); if (k === 'm' && A && !collapsed) { muted = !muted; A.master.gain.value = muted ? 0 : .8; } });
 
 /* ---------- INICIO ---------- */
 document.getElementById('go').onclick = async () => {
@@ -190,8 +203,21 @@ function updateTracks(poses) {
   tracks = tracks.filter(t => t.miss < 6);
 }
 
+/* ---------- COLAPSO: a los 30 s de disrupción el sistema cae ---------- */
+const LIMIT = 30000, GRACE = 1500;   // LIMIT: ms de disrupción seguida hasta el colapso (manos y/o boca suman); GRACE: ms de pausa tolerados antes de volver a 0
+function collapse() {
+  collapsed = true;
+  if (A) { const n = ac.currentTime; A.ng.gain.cancelScheduledValues(n); A.ng.gain.setValueAtTime(.5, n); A.ng.gain.linearRampToValueAtTime(0, n + 1); A.master.gain.setTargetAtTime(0, n + 1, .2); }
+  v.srcObject?.getTracks().forEach(tr => tr.stop());           // apaga la cámara
+  ctx.fillStyle = '#000'; ctx.fillRect(0, 0, W, H);
+  document.getElementById('end').classList.add('on');
+}
+document.getElementById('end').onclick = () => location.reload();   // vuelve a la portada
+
 /* ---------- LOOP ---------- */
 function loop(t) {
+  if (collapsed) return;
+  const dt = prevT ? t - prevT : 0; prevT = t;
   frame++;
   if (v.currentTime !== last) {
     last = v.currentTime;
@@ -222,6 +248,8 @@ function loop(t) {
   if (hands.length) { hx = Math.min(1, Math.max(0, hands.reduce((a, h) => a + mx(h[9]), 0) / hands.length / W)); hy = Math.min(1, Math.max(0, hands.reduce((a, h) => a + my(h[9]), 0) / hands.length / H)); }
   lv = lerp(lv, Math.max(hands.length ? Math.min(1, .5 + open * .5) : 0, mouth * .9), .08);
   if (lv < .01) lv = 0;
+  if (lv > .3) { dis += dt; calm = 0; } else { calm += dt; if (calm > GRACE) dis = 0; }
+  if (dis >= LIMIT) { collapse(); return; }
 
   // warp liquify + tinte CCTV
   const n = pts.length;
@@ -263,6 +291,11 @@ function loop(t) {
   gtxt('DISCIPLINARY ARCHITECTURE // CCTV', 20, 66);
   if (lv > .5 && Math.random() < .25) gtxt('0x' + (Math.random() * 1e8 | 0).toString(16).toUpperCase() + ' ERR', Math.random() * (W - 120), Math.random() * H);
 
+  if (dis > 0) {   // timer de disrupción
+    const secs = Math.min(30, dis / 1000 | 0), x0 = W / 2 - 110;
+    gtxt((calm > 300 ? 'EL SISTEMA SE RECUPERA' : secs >= 25 ? 'COLAPSO INMINENTE' : 'DISRUPCIÓN') + ': ' + String(secs).padStart(2, '0') + ' / 30 s', x0, H - 28);
+    ctx.strokeStyle = '#00ff78'; ctx.strokeRect(x0, H - 20, 220, 7); ctx.fillStyle = '#ff2255'; ctx.fillRect(x0, H - 20, 220 * dis / LIMIT, 7);
+  }
   updateAudio(hx, hy);
   requestAnimationFrame(loop);
 }
